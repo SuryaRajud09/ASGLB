@@ -1,0 +1,10 @@
+pipeline {
+    agent any
+    stages {
+        stage('Submit Stack') {
+            steps {
+            bat 'aws cloudformation create-stack --stack-name ASGLB --template-body file://ec2AS.yaml --region us-east-1'
+              }
+             }
+            }
+            }
