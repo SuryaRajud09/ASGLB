@@ -44,6 +44,8 @@ Resources:
       AvailabilityZones: !GetAZs ''
       MinSize: '2'
       MaxSize: '4'
+      LoadBalancerNames: 
+        - !Ref ApplicationLoadBalancer
       LaunchConfigurationName: !Ref MyAutoScalingLaunchConfiguration
   ApplicationLoadBalancer:
     Type: AWS::ElasticLoadBalancing::LoadBalancer
@@ -54,6 +56,8 @@ Resources:
         - LoadBalancerPort: '80'
           InstancePort: '80'
           Protocol: HTTP
+      SecurityGroups: 
+        - !Ref MySecurityGroup
 
 
 
