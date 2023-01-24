@@ -1,0 +1,59 @@
+Parameters:
+  MyKeyPairName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: NewKey
+  MyImageId:
+    Type: AWS::EC2::Image::Id
+    Default: ami-0b5eea76982371e91
+  VPCId:
+    Type: AWS::EC2::VPC::Id
+    Default: vpc-0b9cfb17d32e099fb
+  SubnetId1:
+    Type: AWS::EC2::Subnet::Id
+    Default: subnet-0e767cbe10e72f5da
+  SubnetId2:
+    Type: AWS::EC2::Subnet::Id
+    Default: subnet-0b6b16f68d6f87051
+Resources:
+  MyAutoScalingLaunchConfiguration:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      UserData:
+        Fn::Base64:
+          #!/bin/bash
+          cat > ~/file <<EOF
+          Hi,
+          How is it going.
+          EOF
+      KeyName: !Ref MyKeyPairName
+      ImageId: !Ref MyImageId
+      InstanceType: t2.micro
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allowing SSH from everywhere
+      SecurityGroupIngress:
+        IpProtocol: tcp
+        ToPort: '22'
+        FromPort: '22'
+        CidrIp: 0.0.0.0/0
+      VpcId: !Ref VPCId
+  MyAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AvailabilityZones: !GetAZs ''
+      MinSize: '2'
+      MaxSize: '4'
+      LaunchConfigurationName: !Ref MyAutoScalingLaunchConfiguration
+  ApplicationLoadBalancer:
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
+    Properties: 
+      Subnets:
+        - !Ref SubnetId1
+      Listeners:
+        - LoadBalancerPort: '80'
+          InstancePort: '80'
+          Protocol: HTTP
+
+
+
